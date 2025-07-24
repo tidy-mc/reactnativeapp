@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, Image, TouchableOpacity} from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 
 //styles
 import styles from './styles';
@@ -9,8 +9,11 @@ import styles from './styles';
 // import {Actions} from 'react-native-router-flux';
 
 //components
-import Button from '../../../../../common/components/Button';
-import strings from '../../../../../config/strings';
+import Button from 'common/components/Button';
+// ...
+// import strings from 'config/strings';
+import strings from 'modules/Auth/locales/fr';
+import { navigate } from 'router/navigator';
 
 const PasswordMessage = (props) => {
   return (
@@ -20,6 +23,7 @@ const PasswordMessage = (props) => {
         onPress={() => {
           // ...
           // Actions.reset('FirstView')
+          navigate('FirstView');
         }}>
         <Image
           source={require('assets/imgs/close.png')}
@@ -40,6 +44,7 @@ const PasswordMessage = (props) => {
           onPress={() => {
             // ...
             // Actions.reset('Login')
+            navigate('Login');
           }}
         />
       </View>

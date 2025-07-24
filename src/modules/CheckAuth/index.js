@@ -27,45 +27,40 @@ const styles = {
 
 
 function CheckAuth() {
-  const navigation = useNavigation();
-
   useEffect(() => {
     const firstLoaded = async () => {
       try {
         const session = await storage.getSession();
         const jwt = await storage.getJWT();
         const refresh = await storage.getRefreshJWT();
+
+        // Add debugging logs
+        console.log('CheckAuth - Session:', session);
+        console.log('CheckAuth - JWT:', jwt);
+        console.log('CheckAuth - Refresh:', refresh);
+
         // check for update required
         if (forceUpdateFromStore) {
-          // ...
-          // Actions.ForceUpdate();
           navigate('ForceUpdate');
         } else {
           if (
-            session &&
-            session !== "null" &&
+            // session &&
+            // session !== "null" &&
             jwt &&
             jwt !== "null" &&
             refresh &&
             refresh !== "null"
           ) {
-            // redirect user to home page
-            // ...
-            // Actions.List();
-            navigation.navigate('List');
+            console.log('CheckAuth - Redirecting to List (authenticated)');
+            navigate('List');
           } else {
-            // Actions.reset("FirstView");
-            // Actions.reset("Login");
-            // ...
-            // Actions.Login();
-            navigation.navigate('Login');
+            console.log('CheckAuth - Redirecting to Login (not authenticated)');
+            navigate('Login');
           }
         }
       } catch (e) {
-        console.log(e);
-        // ...
-        // Actions.Login();
-        navigation.navigate('Login');
+        console.log('CheckAuth - Error:', e);
+        navigate('Login');
       }
     }
     firstLoaded();

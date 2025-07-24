@@ -80,29 +80,6 @@ const Rootstack = () => {
         name="ForceUpdate"
         component={ForceUpdate}
       />
-
-
-      {/* <Stack.Screen
-        name="SignUp"
-        component={SignupScreen}
-        options={({navigation}) => ({
-          headerTitle: '',
-          headerLeft: () => (
-            isIos ? <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Icons
-                  name={'arrowleft'}
-                  size={25}
-                  style={{color: 'black'}}/>
-            </TouchableOpacity> : <View style={{width: 25}} />
-          ),
-          headerTitleStyle: NavigationStyles.headerTitle,
-          headerLeftContainerStyle: NavigationStyles.headerLeftPadding,
-          headerRightContainerStyle: NavigationStyles.headerRightPadding,
-          // headerStyle: NavigationStyles.headerStyle,
-          headerShown: true
-        })}
-      /> */}
-
     </Stack.Navigator>
   );
 }

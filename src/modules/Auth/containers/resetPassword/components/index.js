@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
 
 //styles
 import styles from "./styles";
@@ -9,12 +9,12 @@ import styles from "./styles";
 // import { Actions } from "react-native-router-flux";
 
 //componens
-import AuthHeader from "../../../components/authHeader";
-import Input from "../../../../../common/components/Input";
-import Button from "../../../../../common/components/Button";
-import Switcher from "../../../components/Switcher";
-import strings from "../../../../../config/strings";
-
+import Input from "common/components/Input";
+import Button from "common/components/Button";
+// ...
+// import strings from "config/strings";
+import strings from "modules/Auth/locales/fr";
+import { navigate } from "router/navigator";
 
 class Login extends React.Component {
   state = {
@@ -25,12 +25,13 @@ class Login extends React.Component {
     const { login } = this.state;
     const paylaod = { login };
     // ...
-    // this.props.actions.passwordReset(paylaod);
+    this.props.actions.passwordReset(paylaod);
   };
 
   onPress = () => {
     // ...
     // Actions.Login();
+    navigate('Login');
   };
   render() {
     return (
@@ -42,7 +43,10 @@ class Login extends React.Component {
             style={styles.back}
           />
         </TouchableOpacity>
-        <Content contentContainerStyle={styles.contentContainerner}>
+        <ScrollView
+          contentContainerStyle={styles.contentContainerner}
+          keyboardShouldPersistTaps="handled"
+        >
           <Text style={styles.recoverText}>{strings.passwordReset}</Text>
           <Input
             label={strings.loginEmail}
@@ -59,7 +63,7 @@ class Login extends React.Component {
               disabled={!this.state.login}
             />
           </View>
-        </Content>
+        </ScrollView>
       </View>
     );
   }

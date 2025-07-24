@@ -11,7 +11,9 @@ import styles from "./styles";
 //componens
 import Input from "common/components/Input";
 import Button from "common/components/Button";
-import strings from "config/strings";
+// ...
+// import strings from "config/strings";
+import strings from "modules/Auth/locales/fr";
 import { navigate } from "router/navigator";
 
 export const Login = (props) => {
@@ -32,7 +34,6 @@ export const Login = (props) => {
       password,
       // oneSignalPlayerId: this.props.oneSignalPlayerId,
     };
-    console.log("=====this.props.actions=====", typeof props.actions);
     props.actions.login(payload);
   };
   const onPress = () => {

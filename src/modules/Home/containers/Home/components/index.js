@@ -17,28 +17,30 @@ import { useDispatch, useSelector } from "react-redux";
 //import { Button } from "../../../../Auth/containers/Login/components/"
 import Button from "components/Button";
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import { useNavigationState } from "@react-navigation/native";
 
 // comp
 import Item from "../../../components/item";
 // actions
-import {listFormations, listRequestSuccess} from "../../../actions";
+import { listFormations, listRequestSuccess } from "../../../actions";
 
 // styles & icons
 import styles from "./styles";
 
 // labels
-import strings from "../../../locales/fr";
+import strings from "modules/Home/locales/fr";
 // navigation
 // ...
 // import { Actions } from "react-native-router-flux";
 import WonderPush from "react-native-wonderpush";
-import {loginFailure, loginSuccess, setCurrentUser} from "../../../../Auth/actions";
-import {setUserHasSentNotificationsPermission} from "../../../../../actions/notificationsPermissionsActions";
-import {Api} from "../../../../../api";
-import {refreshToken} from "../../../../../actions";
-import {setUserAdherentCard} from "../../../../../actions/adherentCardActions";
-import {loginUrl} from "../../../../Auth/api/endpoints";
-import gaSendLoadAppEvent, {loadAppAlreadyCalled} from "../../../../../services/ga-api";
+import { loginFailure, loginSuccess, setCurrentUser } from "modules/Auth/actions";
+import { setUserHasSentNotificationsPermission } from "actions/notificationsPermissionsActions";
+import { Api } from "api";
+import { refreshToken } from "actions";
+import { setUserAdherentCard } from "actions/adherentCardActions";
+import { loginUrl } from "modules/Auth/api/endpoints";
+import gaSendLoadAppEvent, { loadAppAlreadyCalled } from "services/ga-api";
+import { navigate } from "router/navigator";
 
 export default (props) => {
   // Execute methode on loading the page
@@ -59,13 +61,13 @@ export default (props) => {
 
   const state = useSelector((state) => state.list);
   const currentUser = useSelector(
-      (state) => state.global.currentUser
+    (state) => state.global.currentUser
   );
   const profile = useSelector(
-      (state) => state.global.currentUser?.contact?.avatar
+    (state) => state.global.currentUser?.contact?.avatar
   );
   const profileText = useSelector(
-      (state) => state.global.currentUser?.contact?.lastname?.substr(0, 2)
+    (state) => state.global.currentUser?.contact?.lastname?.substr(0, 2)
   );
 
   // State of refresh
@@ -99,32 +101,32 @@ export default (props) => {
 
   const getWalletData = async () => {
     Api()
-        .get('/wallet/information')
-        .then((data) => {
+      .get('/wallet/information')
+      .then((data) => {
 
-          dispatch(setUserAdherentCard(data?.response));
-        })
-        .catch(async (error) => {
+        dispatch(setUserAdherentCard(data?.response));
+      })
+      .catch(async (error) => {
 
-          if (error?.status_code != undefined && error?.status_code != null && error?.status_code == 401) {
-            await refreshToken();
-            getWalletData();
-          }
-          else {
-            console.debug(JSON.stringify(error));
-          }
-        });
+        if (error?.status_code != undefined && error?.status_code != null && error?.status_code == 401) {
+          await refreshToken();
+          getWalletData();
+        }
+        else {
+          console.debug(JSON.stringify(error));
+        }
+      });
   }
 
   // on load of page set the initialScrollIndex
   useEffect(() => {
     props._id &&
-    state?.list.map((item, index) => {
-      if (item.id === props._id) {
-        setInitialScrollIndex(index);
-        return;
-      }
-    });
+      state?.list.map((item, index) => {
+        if (item.id === props._id) {
+          setInitialScrollIndex(index);
+          return;
+        }
+      });
   }, []);
 
   // Surcharge du back handler
@@ -135,8 +137,8 @@ export default (props) => {
     }
 
     const backHandler = BackHandler.addEventListener(
-        "hardwareBackPress",
-        backAction
+      "hardwareBackPress",
+      backAction
     );
 
     return () => backHandler.remove();
@@ -144,13 +146,10 @@ export default (props) => {
 
   // backhandler function
   const backAction = () => {
-    // ...
-    // if (Actions.currentScene === "List") {
-    //   setVisible(false);
-    //   setModalFilterVisible(false);
-    //   BackHandler.exitApp()
-    //   return true;
-    // }
+    setVisible(false);
+    setModalFilterVisible(false);
+    BackHandler.exitApp();
+    return true;
   };
 
   const selectPeriod = (period) => {
@@ -161,92 +160,92 @@ export default (props) => {
   const Filter = () => {
     if (modalFilterVisible)
       return (
-          <TouchableOpacity
-              onPress={() => setModalFilterVisible(false)}
-              activeOpacity={1}
-              style={styles.triContent}
-          >
-            <TouchableWithoutFeedback>
-              <View style={styles.modalFilter}>
-                <View style={styles.row}>
-                  <Text style={styles.modalFilterTitle}>{"Filtrer sur les articles sur la période"}</Text>
-                  <TouchableOpacity
-                      onPress={() => {
-                        setModalFilterVisible(false);
-                      }}
-                  >
-                    <Image
-                        style={styles.row_image}
-                        source={require("assets/imgs/x.png")}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View
+        <TouchableOpacity
+          onPress={() => setModalFilterVisible(false)}
+          activeOpacity={1}
+          style={styles.triContent}
+        >
+          <TouchableWithoutFeedback>
+            <View style={styles.modalFilter}>
+              <View style={styles.row}>
+                <Text style={styles.modalFilterTitle}>{"Filtrer sur les articles sur la période"}</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setModalFilterVisible(false);
+                  }}
                 >
-                  <TouchableOpacity
-                      style={styles.row}
-                      onPress={() => selectPeriod("3m")}
-                  >
-
-                    <Text style={periodSelected === "3m" ? styles.selected : styles.unselected}>{"3 mois"}</Text>
-                    {
-                      periodSelected === "3m" && (
-                          <Image
-                              source={require("assets/imgs/check.png")}
-                              style={styles.check}
-                          />
-                      )
-                    }
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                      style={styles.row}
-                      onPress={() => selectPeriod("6m")}
-                  >
-
-                    <Text style={periodSelected === "6m" ? styles.selected : styles.unselected}>{"6 mois"}</Text>
-                    {
-                      periodSelected === "6m" && (
-                          <Image
-                              source={require("assets/imgs/check.png")}
-                              style={styles.check}
-                          />
-                      )
-                    }
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                      style={styles.row}
-                      onPress={() => selectPeriod("12m")}
-                  >
-
-                    <Text style={periodSelected === "12m" ? styles.selected : styles.unselected}>{"12 mois"}</Text>
-                    {
-                      periodSelected === "12m" && (
-                          <Image
-                              source={require("assets/imgs/check.png")}
-                              style={styles.check}
-                          />
-                      )
-                    }
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                      style={styles.row}
-                      onPress={() => selectPeriod("all")}
-                  >
-
-                    <Text style={periodSelected === "all" ? styles.selected : styles.unselected}>{"Tous les articles"}</Text>
-                    {
-                      periodSelected === "all" && (
-                          <Image
-                              source={require("assets/imgs/check.png")}
-                              style={styles.check}
-                          />
-                      )
-                    }
-                  </TouchableOpacity>
-                </View>
+                  <Image
+                    style={styles.row_image}
+                    source={require("assets/imgs/x.png")}
+                  />
+                </TouchableOpacity>
               </View>
-            </TouchableWithoutFeedback>
-          </TouchableOpacity>
+              <View
+              >
+                <TouchableOpacity
+                  style={styles.row}
+                  onPress={() => selectPeriod("3m")}
+                >
+
+                  <Text style={periodSelected === "3m" ? styles.selected : styles.unselected}>{"3 mois"}</Text>
+                  {
+                    periodSelected === "3m" && (
+                      <Image
+                        source={require("assets/imgs/check.png")}
+                        style={styles.check}
+                      />
+                    )
+                  }
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.row}
+                  onPress={() => selectPeriod("6m")}
+                >
+
+                  <Text style={periodSelected === "6m" ? styles.selected : styles.unselected}>{"6 mois"}</Text>
+                  {
+                    periodSelected === "6m" && (
+                      <Image
+                        source={require("assets/imgs/check.png")}
+                        style={styles.check}
+                      />
+                    )
+                  }
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.row}
+                  onPress={() => selectPeriod("12m")}
+                >
+
+                  <Text style={periodSelected === "12m" ? styles.selected : styles.unselected}>{"12 mois"}</Text>
+                  {
+                    periodSelected === "12m" && (
+                      <Image
+                        source={require("assets/imgs/check.png")}
+                        style={styles.check}
+                      />
+                    )
+                  }
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.row}
+                  onPress={() => selectPeriod("all")}
+                >
+
+                  <Text style={periodSelected === "all" ? styles.selected : styles.unselected}>{"Tous les articles"}</Text>
+                  {
+                    periodSelected === "all" && (
+                      <Image
+                        source={require("assets/imgs/check.png")}
+                        style={styles.check}
+                      />
+                    )
+                  }
+                </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
       )
   }
 
@@ -254,156 +253,156 @@ export default (props) => {
   const Tri = () => {
     if (visible)
       return (
-          <TouchableOpacity
-              onPress={() => setVisible(false)}
-              activeOpacity={1}
-              style={styles.triContent}
-          >
-            <TouchableWithoutFeedback>
-              <View style={styles.tri}>
-                <View style={styles.row}>
-                  <Text style={styles.row_title}>{strings.tri_title}</Text>
+        <TouchableOpacity
+          onPress={() => setVisible(false)}
+          activeOpacity={1}
+          style={styles.triContent}
+        >
+          <TouchableWithoutFeedback>
+            <View style={styles.tri}>
+              <View style={styles.row}>
+                <Text style={styles.row_title}>{strings.tri_title}</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setVisible(false);
+                    // setSelection([]);
+                  }}
+                >
+                  <Image
+                    style={styles.row_image}
+                    source={require("assets/imgs/x.png")}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View>
+                {selection === strings.recent ? (
                   <TouchableOpacity
-                      onPress={() => {
-                        setVisible(false);
-                        // setSelection([]);
-                      }}
+                    style={styles.row}
+                    onPress={() => {
+                      setSelection(strings.old);
+                      setQueries({ sort: "createdAt", order: "asc" });
+                      setVisible(false);
+                    }}
                   >
+                    <Text style={styles.selected}>{strings.recent}</Text>
                     <Image
-                        style={styles.row_image}
-                        source={require("assets/imgs/x.png")}
+                      source={require("assets/imgs/check.png")}
+                      style={styles.check}
                     />
                   </TouchableOpacity>
-                </View>
-                <View>
-                  {selection === strings.recent ? (
-                      <TouchableOpacity
-                          style={styles.row}
-                          onPress={() => {
-                            setSelection(strings.old);
-                            setQueries({ sort: "createdAt", order: "asc" });
-                            setVisible(false);
-                          }}
-                      >
-                        <Text style={styles.selected}>{strings.recent}</Text>
-                        <Image
-                            source={require("assets/imgs/check.png")}
-                            style={styles.check}
-                        />
-                      </TouchableOpacity>
-                  ) : (
-                      <TouchableOpacity
-                          style={styles.row}
-                          onPress={() => {
-                            setSelection(strings.recent);
-                            setQueries({ sort: "createdAt", order: "desc" });
-                            setVisible(false);
-                          }}
-                      >
-                        <Text style={styles.unselected}>{strings.recent}</Text>
-                      </TouchableOpacity>
-                  )}
-                </View>
-                <View>
-                  {selection === strings.old ? (
-                      <TouchableOpacity
-                          style={styles.row}
-                          onPress={() => {
-                            setSelection(strings.recent);
-                            setQueries({ sort: "createdAt", order: "desc" });
-                            setVisible(false);
-                          }}
-                      >
-                        <Text style={styles.selected}>{strings.old}</Text>
-                        <Image
-                            source={require("assets/imgs/check.png")}
-                            style={styles.check}
-                        />
-                      </TouchableOpacity>
-                  ) : (
-                      <TouchableOpacity
-                          style={styles.row}
-                          onPress={() => {
-                            setSelection(strings.old);
-                            setQueries({ sort: "createdAt", order: "asc" });
-                            setVisible(false);
-                          }}
-                      >
-                        <Text style={styles.unselected}>{strings.old}</Text>
-                      </TouchableOpacity>
-                  )}
-                </View>
-                <View>
-                  {selection === strings.featured ? (
-                      <TouchableOpacity
-                          style={styles.row}
-                          onPress={() => {
-                            setSelection(ref.current);
-                            setQueries({ ...queries, sort: "createdAt" });
-                            setVisible(false);
-                          }}
-                      >
-                        <Text style={styles.selected}>{strings.featured}</Text>
-                        <Image
-                            source={require("assets/imgs/check.png")}
-                            style={styles.check}
-                        />
-                      </TouchableOpacity>
-                  ) : (
-                      <TouchableOpacity
-                          style={styles.row}
-                          onPress={() => {
-                            // setSelection(strings.visited);
-                            // setQueries({ ...queries, sort: "featured" });
-                            // setVisible(false);
-                            if (state?.list?.length > 0) {
-                              setSelection(strings.featured);
-                              setQueries({ ...queries, sort: "featured" });
-                              setVisible(false);
-                            }
-                            else {
-                              setSelection(strings.recent);
-                              setQueries({ sort: "createdAt", order: "desc" });
-                              setVisible(false);
-                            }
-                          }}
-                      >
-                        <Text style={styles.unselected}>{strings.featured}</Text>
-                      </TouchableOpacity>
-                  )}
-                </View>
-                <View>
-                  {selection === strings.visited ? (
-                      <TouchableOpacity
-                          style={styles.row}
-                          onPress={() => {
-                            setSelection(ref.current);
-                            setQueries({ ...queries, sort: "createdAt" });
-                            setVisible(false);
-                          }}
-                      >
-                        <Text style={styles.selected}>{strings.visited}</Text>
-                        <Image
-                            source={require("assets/imgs/check.png")}
-                            style={styles.check}
-                        />
-                      </TouchableOpacity>
-                  ) : (
-                      <TouchableOpacity
-                          style={styles.row}
-                          onPress={() => {
-                            setSelection(strings.visited);
-                            setQueries({ ...queries, sort: "popular" });
-                            setVisible(false);
-                          }}
-                      >
-                        <Text style={styles.unselected}>{strings.visited}</Text>
-                      </TouchableOpacity>
-                  )}
-                </View>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.row}
+                    onPress={() => {
+                      setSelection(strings.recent);
+                      setQueries({ sort: "createdAt", order: "desc" });
+                      setVisible(false);
+                    }}
+                  >
+                    <Text style={styles.unselected}>{strings.recent}</Text>
+                  </TouchableOpacity>
+                )}
               </View>
-            </TouchableWithoutFeedback>
-          </TouchableOpacity>
+              <View>
+                {selection === strings.old ? (
+                  <TouchableOpacity
+                    style={styles.row}
+                    onPress={() => {
+                      setSelection(strings.recent);
+                      setQueries({ sort: "createdAt", order: "desc" });
+                      setVisible(false);
+                    }}
+                  >
+                    <Text style={styles.selected}>{strings.old}</Text>
+                    <Image
+                      source={require("assets/imgs/check.png")}
+                      style={styles.check}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.row}
+                    onPress={() => {
+                      setSelection(strings.old);
+                      setQueries({ sort: "createdAt", order: "asc" });
+                      setVisible(false);
+                    }}
+                  >
+                    <Text style={styles.unselected}>{strings.old}</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              <View>
+                {selection === strings.featured ? (
+                  <TouchableOpacity
+                    style={styles.row}
+                    onPress={() => {
+                      setSelection(ref.current);
+                      setQueries({ ...queries, sort: "createdAt" });
+                      setVisible(false);
+                    }}
+                  >
+                    <Text style={styles.selected}>{strings.featured}</Text>
+                    <Image
+                      source={require("assets/imgs/check.png")}
+                      style={styles.check}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.row}
+                    onPress={() => {
+                      // setSelection(strings.visited);
+                      // setQueries({ ...queries, sort: "featured" });
+                      // setVisible(false);
+                      if (state?.list?.length > 0) {
+                        setSelection(strings.featured);
+                        setQueries({ ...queries, sort: "featured" });
+                        setVisible(false);
+                      }
+                      else {
+                        setSelection(strings.recent);
+                        setQueries({ sort: "createdAt", order: "desc" });
+                        setVisible(false);
+                      }
+                    }}
+                  >
+                    <Text style={styles.unselected}>{strings.featured}</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              <View>
+                {selection === strings.visited ? (
+                  <TouchableOpacity
+                    style={styles.row}
+                    onPress={() => {
+                      setSelection(ref.current);
+                      setQueries({ ...queries, sort: "createdAt" });
+                      setVisible(false);
+                    }}
+                  >
+                    <Text style={styles.selected}>{strings.visited}</Text>
+                    <Image
+                      source={require("assets/imgs/check.png")}
+                      style={styles.check}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.row}
+                    onPress={() => {
+                      setSelection(strings.visited);
+                      setQueries({ ...queries, sort: "popular" });
+                      setVisible(false);
+                    }}
+                  >
+                    <Text style={styles.unselected}>{strings.visited}</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
       );
   };
 
@@ -418,7 +417,7 @@ export default (props) => {
   const getMore = () => {
     if (state?.list?.length <= state?.count) {
       dispatch(
-          listFormations(20, state?.list?.length, queries.sort, queries.order)
+        listFormations(20, state?.list?.length, queries.sort, queries.order)
       );
     }
   };
@@ -460,83 +459,82 @@ export default (props) => {
   // emptyList render
   function emptyList() {
     return (
-        <View style={styles.errorContent}>
-          <Text style={styles.errorMessage}>
-            {
-              periodSelected === "" ? "En cours de chargement..." : "Aucun article trouvé"
-            }
-          </Text>
-        </View>
+      <View style={styles.errorContent}>
+        <Text style={styles.errorMessage}>
+          {
+            periodSelected === "" ? "En cours de chargement..." : "Aucun article trouvé"
+          }
+        </Text>
+      </View>
     );
   }
   return (
-      <>
+    <>
 
-        {/* MAIN VIEW CONTAINER */}
-        <View style={styles.container}>
+      {/* MAIN VIEW CONTAINER */}
+      <View style={styles.container}>
 
-          {/* TOPBAR CONTAINER */}
-          <View style={styles.topBarContainer}>
+        {/* TOPBAR CONTAINER */}
+        <View style={styles.topBarContainer}>
 
-            {/* TOPBAR LEFT ITEM */}
-            <View style={[styles.topBarLeftItem]}>
-              <View style={[styles.overlayiOS]}>
-                <TouchableOpacity style={{justifyContent: "center"}} onPress={() => {
-                  // ...
-                  // Actions.Profile()
-                }}>
-                  {profile ? (<Image source={{ uri: profile }} resizeMode="cover" style={[styles.profile]} />) : (<Text style={styles.profileText}>{profileText}</Text>)}
-                </TouchableOpacity>
-              </View >
-            </View>
-
-            {/* TOPBAR CENTER ITEM */}
-            <View style={styles.topBarCenterItem}>
-              <Image style={styles.logo} resizeMode="contain" source={require("assets/imgs/SNPI-logo-transparent.png")} />
-            </View>
-
-            {/* TOPBAR RIGHT ITEM */}
-            <View style={styles.topBarRightItem}>
-              <TouchableOpacity onPress={() => { setVisible(true) }}>
-                <Image style={styles.picto} resizeMode="contain" source={require("assets/imgs/filter.png")} />
+          {/* TOPBAR LEFT ITEM */}
+          <View style={[styles.topBarLeftItem]}>
+            <View style={[styles.overlayiOS]}>
+              <TouchableOpacity style={{ justifyContent: "center" }} onPress={() => {
+                // ...
+                // Actions.Profile()
+                navigate('Profile');
+              }}>
+                {profile ? (<Image source={{ uri: profile }} resizeMode="cover" style={[styles.profile]} />) : (<Text style={styles.profileText}>{profileText}</Text>)}
               </TouchableOpacity>
-            </View>
-
+            </View >
           </View>
 
-          <ScrollView style={styles.scrollview}>
-            <FlatList
-                style={styles.list}
-                data={displayArticles()}
-                renderItem={({ item }) => <Item data={item} />}
-                keyExtractor={(item) => item?.id?.toString()}
-                extraData={state?.list}
-                onEndReachedThreshold={0.1}
-                onEndReached={() => getMore()}
-                onRefresh={() => onRefresh()}
-                refreshing={refresh}
-                initialScrollIndex={initialScrollIndex}
-                onScrollToIndexFailed={(d) => {
-                  setInitialScrollIndex(d?.index);
-                }}
-                ListEmptyComponent={() => emptyList()}
+          {/* TOPBAR CENTER ITEM */}
+          <View style={styles.topBarCenterItem}>
+            <Image style={styles.logo} resizeMode="contain" source={require("assets/imgs/SNPI-logo-transparent.png")} />
+          </View>
 
-            />
-            {
-              state?.list && (
-                  <View style={styles.viewButtonSeeMore}>
-                    <Button
-                        big
-                        content={"Voir plus"}
-                        onPress={() => setModalFilterVisible(true)}
-                    />
-                  </View>
-              )
-            }
-          </ScrollView>
+          {/* TOPBAR RIGHT ITEM */}
+          <View style={styles.topBarRightItem}>
+            <TouchableOpacity onPress={() => { setVisible(true) }}>
+              <Image style={styles.picto} resizeMode="contain" source={require("assets/imgs/filter.png")} />
+            </TouchableOpacity>
+          </View>
+
         </View>
-        {Tri()}
-        {Filter()}
-      </>
+
+        {/* Remove the ScrollView wrapper */}
+        <FlatList
+          style={styles.list}
+          data={displayArticles()}
+          renderItem={({ item }) => <Item data={item} />}
+          keyExtractor={(item) => item?.id?.toString()}
+          extraData={state?.list}
+          onEndReachedThreshold={0.1}
+          onEndReached={() => getMore()}
+          onRefresh={() => onRefresh()}
+          refreshing={refresh}
+          initialScrollIndex={initialScrollIndex}
+          onScrollToIndexFailed={(d) => {
+            setInitialScrollIndex(d?.index);
+          }}
+          ListEmptyComponent={() => emptyList()}
+          ListFooterComponent={() => (
+            state?.list && (
+              <View style={styles.viewButtonSeeMore}>
+                <Button
+                  big
+                  content={"Voir plus"}
+                  onPress={() => setModalFilterVisible(true)}
+                />
+              </View>
+            )
+          )}
+        />
+      </View>
+      {Tri()}
+      {Filter()}
+    </>
   );
 };

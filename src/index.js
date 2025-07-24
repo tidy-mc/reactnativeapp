@@ -6,15 +6,13 @@ import { Provider } from "react-redux";
 import { NetworkProvider } from "./contextProviders/NetworkProvider";
 import { AppStateProvider } from "./contextProviders/AppStateProvider";
 import { MenuProvider } from "react-native-popup-menu";
-import configureStore from "./store";
+import store from "./store";
 
 import notificationHandler from "./lib/notificationHandler";
 
 import Router from "./router";
 import { navigate, navigationRef } from "router/navigator";
 import { NavigationContainer } from '@react-navigation/native';
-
-const store = configureStore();
 
 export default class Main extends React.Component {
   constructor(props) {

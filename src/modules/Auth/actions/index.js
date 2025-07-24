@@ -23,8 +23,9 @@ import { SET_CURRENT_USER } from "actionsTypes";
 import { loginUrl, passwordUrl, logoutUrl } from "../api/endpoints";
 // import { Actions } from "react-native-router-flux";
 import WonderPush from "react-native-wonderpush";
-import {setUserAdherentCard} from "../../../actions/adherentCardActions";
-import {refreshToken} from "../../../actions";
+import { setUserAdherentCard } from "actions/adherentCardActions";
+import { refreshToken } from "actions";
+import { navigate } from "router/navigator";
 
 export const setCurrentUser = (payload) => ({
   type: SET_CURRENT_USER,
@@ -50,27 +51,30 @@ export const login = (payload) => {
     Api()
       .post(loginUrl(), payload)
       .then(async (data) => {
+        console.log('Login success - Response headers should contain tokens');
+
         dispatch(loginSuccess());
         dispatch(setCurrentUser(data?.response));
         await WonderPush.subscribeToNotifications();
         await WonderPush.setUserId(data?.response?.id.toString());
-        if( data?.response?.isCollaborator || data?.response?.isLegalRepresentative)
-            await WonderPush.addTag('company');
-        if( data?.response?.isCommercialAgent)
-            await WonderPush.addTag('contact');
-        if( data?.response?.isStudent)
-            await WonderPush.addTag('student');
-          Api()
-              .get('/wallet/information')
-              .then((data) => {
+        if (data?.response?.isCollaborator || data?.response?.isLegalRepresentative)
+          await WonderPush.addTag('company');
+        if (data?.response?.isCommercialAgent)
+          await WonderPush.addTag('contact');
+        if (data?.response?.isStudent)
+          await WonderPush.addTag('student');
+        Api()
+          .get('/wallet/information')
+          .then((data) => {
 
-                  dispatch(setUserAdherentCard(data?.response));
-              })
-              .catch(async (error) => {
-                  console.debug(JSON.stringify(error));
-              });
+            dispatch(setUserAdherentCard(data?.response));
+          })
+          .catch(async (error) => {
+            console.debug(JSON.stringify(error));
+          });
         // ...
         // Actions.List();
+        navigate("List");
       })
       .catch(async (error) => {
         console.log(error);
@@ -90,6 +94,7 @@ export const logoutUser = () => {
         await WonderPush.unsubscribeFromNotifications();
         // ...
         // Actions.reset("Login");
+        navigate("Login");
         storage.clearSession();
         storage.clearJWT();
 
@@ -99,6 +104,7 @@ export const logoutUser = () => {
         await WonderPush.unsubscribeFromNotifications();
         // ...
         // Actions.reset("Login");
+        navigate("Login");
         storage.clearSession();
         storage.clearSession();
         storage.clearJWT();
@@ -129,6 +135,7 @@ export const passwordReset = (payload) => {
         dispatch(passwordSuccess(data));
         // ...
         // Actions.reset("PasswordMessage");
+        navigate('PasswordMessage');
       })
       .catch((error) => {
         dispatch(passwordFailure());

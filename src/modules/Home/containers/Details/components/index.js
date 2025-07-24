@@ -16,24 +16,32 @@ import { useDispatch, useSelector } from "react-redux";
 import styles from "./styles";
 
 // Actions
-import { oneNews } from "../../../actions";
+import { oneNews } from "modules/Home/actions";
 
 // libs
 import "moment/locale/fr";
 import { WebView } from "react-native-webview";
-import strings from "../../../../../locales/fr";
+import strings from "locales/fr";
 
-import CONFIG from "../../../../../config/api";
+import CONFIG from "config/api";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 const { BASE_URL } = CONFIG;
 
 export default (props) => {
 
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { data } = route.params;
+
+
   // Execute methode on loading the page
   const dispatch = useDispatch();
 
   // Read from the store variables
-  const state = props.data;
+  const state = data;
+
+  console.log('=-======= details/cp/index.js', data);
 
   const getElapsedTime = (date) => {
 
@@ -81,10 +89,13 @@ export default (props) => {
 
   // Redirection automatique vers l'article
   useEffect(() => {
+    // call news api to increment read count
+    oneNews(state.id);
     if (state) {
       Linking.openURL(getUrlRedirection(state));
       // ...
       // Actions.pop()
+      navigation.goBack();
     }
   }, [])
 
@@ -114,8 +125,6 @@ export default (props) => {
   };
 
 
-  // call news api to increment read count
-  oneNews(state.id);
 
   return (
     <View style={styles.container}>
@@ -125,6 +134,7 @@ export default (props) => {
         onPress={() => {
           // ...
           // Actions.pop()
+          navigation.goBack();
         }}
       >
         <Image

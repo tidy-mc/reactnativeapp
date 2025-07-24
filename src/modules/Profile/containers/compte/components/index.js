@@ -11,16 +11,17 @@ import { useDispatch, useSelector } from "react-redux";
 // lib
 // ...
 // import { Actions } from "react-native-router-flux";
-import CONFIG from "../../../../../config/api";
+import CONFIG from "config/api";
 import OpenPdf from 'react-native-open-pdf';
 const { API_BASE_URL, API_VERSION } = CONFIG;
 // styles
 import styles from "./styles";
 // strings
-import strings from "../../../locales/fr";
+import strings from "modules/Profile/locales/fr";
 // actions
-import { logoutUser } from "../../../../Auth/actions";
-import gaSendLoadAppEvent from "../../../../../services/ga-api";
+import { logoutUser } from "modules/Auth/actions";
+import gaSendLoadAppEvent from "services/ga-api";
+import { navigate } from "router/navigator";
 export default () => {
 
   const adherentCard = useSelector((state) => state.adherentCard);
@@ -32,7 +33,7 @@ export default () => {
 
   // URL to visit
   const url = "https://www.snpi.fr/";
-  const CGU = API_BASE_URL+"/asset/cgu";
+  const CGU = API_BASE_URL + "/asset/cgu";
   // Execute actions methodes
   const dispatch = useDispatch();
 
@@ -46,8 +47,8 @@ export default () => {
     type === "CGU"
       ? (link = CGU)
       : type === "commercial_agent"
-      ? (link = "https://agentsco.snpi.pro/connection")
-      : (link = "https://www.snpi.pro/connection");
+        ? (link = "https://agentsco.snpi.pro/connection")
+        : (link = "https://www.snpi.pro/connection");
     // Checking if the link is supported for links with custom URL scheme.
 
     if (Platform.OS == "ios") {
@@ -76,17 +77,17 @@ export default () => {
         <TouchableOpacity activeOpacity={0.8} style={styles.backContent} onPress={() => {
           // ...
           // Actions.List()
+          navigate('List');
         }}>
-          <Image source={require("assets/imgs/arrow-back.png")} style={styles.back} resizeMode="contain"/>
+          <Image source={require("assets/imgs/arrow-back.png")} style={styles.back} resizeMode="contain" />
         </TouchableOpacity>
 
         <Text style={styles.title}>{strings.count}</Text>
       </View>
       <View style={styles.profile}>
-        <Image source={{ uri: profile }} style={styles.image} resizeMode="cover"/>
-        <Text style={styles.fullName}>{`${
-          state?.firstname ? state?.firstname : ""
-        } ${state?.lastname ? state?.lastname : ""}`}</Text>
+        <Image source={{ uri: profile }} style={styles.image} resizeMode="cover" />
+        <Text style={styles.fullName}>{`${state?.firstname ? state?.firstname : ""
+          } ${state?.lastname ? state?.lastname : ""}`}</Text>
       </View>
       <View style={styles.choices}>
         <TouchableOpacity onPress={() => {
@@ -97,25 +98,27 @@ export default () => {
           if (adherentCard?.lastname != "") {
             // ...
             // Actions.Card()
+            navigate('Card');
           }
           else {
             Alert.alert(
-                "Erreur",
-                "Erreur lors de la récupération de votre carte adhérent, veuillez contacter un administrateur."
+              "Erreur",
+              "Erreur lors de la récupération de votre carte adhérent, veuillez contacter un administrateur."
             );
           }
         }} activeOpacity={0.8}>
           <View style={styles.choiceContent}>
             <Text style={styles.choice}>{strings.subscriptionsCard}</Text>
             <Image
-                source={require("assets/imgs/chevron-left.png")}
-                style={styles.chevron}
+              source={require("assets/imgs/chevron-left.png")}
+              style={styles.chevron}
             />
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {
           // ...
           // Actions.Abonnements()
+          navigate('Abonnements');
         }} activeOpacity={0.8}>
           <View style={styles.choiceContent}>
             <Text style={styles.choice}>{strings.followers}</Text>
@@ -128,6 +131,7 @@ export default () => {
         <TouchableOpacity onPress={() => {
           // ...
           // Actions.Notifications()
+          navigate('Notifications');
         }} activeOpacity={0.8}>
           <View style={styles.choiceContent}>
             <Text style={styles.choice}>{strings.notifications}</Text>

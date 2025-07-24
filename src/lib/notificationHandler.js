@@ -5,11 +5,8 @@
  *
  */
 
-// ...
-// import {Actions} from 'react-native-router-flux';
+import { navigate } from "router/navigator";
 
-// Navigation Api
-// import {Actions} from 'react-native-router-flux';
 
 // Interactions toast
 // import {displayToast} from 'lib/interactions';
@@ -19,7 +16,7 @@
 
 // some actions to dispatch
 
-export default ({additionalData, isAppInFocus}, dispatch, getState) => {
+export default ({ additionalData, isAppInFocus }, dispatch, getState) => {
   try {
     switch (additionalData.notif_type) {
       case 'new_pain':
@@ -45,5 +42,5 @@ export default ({additionalData, isAppInFocus}, dispatch, getState) => {
       default:
         break;
     }
-  } catch {}
+  } catch { }
 };

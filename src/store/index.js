@@ -1,4 +1,5 @@
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
+import { configureStore } from "@reduxjs/toolkit";
 import reducers from '../reducers';
 import promiseMiddleware from 'redux-promise';
 
@@ -8,6 +9,9 @@ const rootReducer = combineReducers(
 
 const enhancer = compose(applyMiddleware(promiseMiddleware));
 
-const configureStore = () => createStore(rootReducer, {}, enhancer);
+const store = configureStore({
+  reducer: rootReducer,
+  devTools: true
+});
 
-export default configureStore;
+export default store;

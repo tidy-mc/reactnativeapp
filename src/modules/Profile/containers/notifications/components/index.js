@@ -6,20 +6,23 @@ import { useDispatch, useSelector } from "react-redux";
 // styls
 import styles from "./styles";
 // strings
-import strings from "../../../locales/fr";
+import strings from "modules/Profile/locales/fr";
+
 
 // lib
 // ...
 // import { Actions } from "react-native-router-flux";
-import { notifications } from "../../../actions";
+import { notifications } from "modules/Profile/actions";
 import WonderPush from "react-native-wonderpush";
-import {Api} from "../../../../../api";
-import {setUserHasSentNotificationsPermission} from "../../../../../actions/notificationsPermissionsActions";
-import {refreshToken} from "../../../../../actions";
+import { Api } from "api";
+import { setUserHasSentNotificationsPermission } from "actions/notificationsPermissionsActions";
+import { refreshToken } from "actions";
+import { useNavigation } from "@react-navigation/native";
 
 export default () => {
   // Execute methode on loading the page
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   // Read from the store variables
   const state = useSelector(
@@ -60,24 +63,24 @@ export default () => {
     }
 
     Api()
-        .get(urlNotificationsPermissions + id)
-        .then((data) => {
-          console.debug(urlNotificationsPermissions + " SUCCESS")
-          console.debug(JSON.stringify(data));
-          // console.debug("/mobile-notification/activate/ REPONSE")
-          // console.debug(data)
-        })
-        .catch(async (error) => {
+      .get(urlNotificationsPermissions + id)
+      .then((data) => {
+        console.debug(urlNotificationsPermissions + " SUCCESS")
+        console.debug(JSON.stringify(data));
+        // console.debug("/mobile-notification/activate/ REPONSE")
+        // console.debug(data)
+      })
+      .catch(async (error) => {
 
-          console.debug(urlNotificationsPermissions +" ERROR")
-          console.debug(JSON.stringify(error));
+        console.debug(urlNotificationsPermissions + " ERROR")
+        console.debug(JSON.stringify(error));
 
-          if (error?.status_code != undefined && error?.status_code != null && error?.status_code == 401) {
-            console.debug("/mobile-notification/activate/ ERROR REFRESH TOKEN")
-            await refreshToken();
-            toggleNotifications();
-          }
-        });
+        if (error?.status_code != undefined && error?.status_code != null && error?.status_code == 401) {
+          console.debug("/mobile-notification/activate/ ERROR REFRESH TOKEN")
+          await refreshToken();
+          toggleNotifications();
+        }
+      });
   }
 
   return (
@@ -89,12 +92,13 @@ export default () => {
           onPress={() => {
             // ...
             // Actions.pop()
+            navigation.goBack();
           }} //reset("Profile")
         >
           <Image
             source={require("assets/imgs/arrow-back.png")}
             style={styles.back}
-            // resizeMode="contain"
+          // resizeMode="contain"
           />
         </TouchableOpacity>
         <Text style={styles.title}>{strings.notifications}</Text>
@@ -109,7 +113,7 @@ export default () => {
             ios_backgroundColor="#3e3e3e"
             onValueChange={toggleSwitch}
             value={isEnabled}
-            // onChange={() => changeValue()}
+          // onChange={() => changeValue()}
           />
         </View>
       </View>

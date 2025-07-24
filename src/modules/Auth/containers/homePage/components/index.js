@@ -9,7 +9,10 @@ import Button from "components/Button";
 // ...
 // import { Actions } from "react-native-router-flux";
 
-import strings from "config/strings";
+// ...
+// import strings from "config/strings";
+import strings from "modules/Auth/locales/fr";
+import { navigate } from "router/navigator";
 
 const HomePage = () => {
   return (
@@ -47,13 +50,14 @@ const HomePage = () => {
         }}
       >
         <Button big content={
-            <View style={styles.buttonContentStyle}>
-              <Text style={styles.btnText}>{strings.homePage_commencer}</Text>
-            </View>
-          }
+          <View style={styles.buttonContentStyle}>
+            <Text style={styles.btnText}>{strings.homePage_commencer}</Text>
+          </View>
+        }
           additonalContainerStyle={styles.additonalContainerStyle} onPress={() => {
             // ...
             // Actions.Login()
+            navigate('Login');
           }}
         />
       </View>

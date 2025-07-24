@@ -2,8 +2,6 @@ import React from "react";
 import { AppState, Linking } from "react-native";
 import { ReactReduxContext } from "react-redux";
 import WonderPush from "react-native-wonderpush";
-// ...
-// import { Actions } from "react-native-router-flux";
 // import {loginHandler} from 'services/oAuth20'; <- uncommnent this line if social login activated
 
 export const AppStateContext = React.createContext({ appState: "" });

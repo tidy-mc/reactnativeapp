@@ -3,17 +3,17 @@ import React from "react";
 import FollowersComponents from "./components";
 
 // Injectors
-import injectLocales from "../../../../utils/injectLocales";
+import injectLocales from "utils/injectLocales";
 
 // import locales
-import fr from "../../locales/fr";
+import fr from "locales/fr";
 
 //
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 // redux action
-import * as actions from "../../../../modules/Profile/actions";
+import * as actions from "modules/Profile/actions";
 
 
 const CardPage = (props) => {

@@ -7,7 +7,9 @@ import { View, Image, Text, TouchableOpacity } from "react-native";
 import styles from "./styles";
 
 // strings
-import strings from "config/strings";
+// ...
+// import strings from "config/strings";
+import strings from "modules/Auth/locales/fr";
 import LinearGradient from "react-native-linear-gradient";
 
 const ForceUpdate = () => {
